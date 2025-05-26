@@ -9,7 +9,26 @@ import {
   Platform,
 } from 'react-native';
 import { router } from 'expo-router';
-import { Bell, Lock, Shield, CircleHelp as HelpCircle, Info, LogOut, ChevronRight, Moon } from 'lucide-react-native';
+import {
+  Bell,
+  Lock,
+  Shield,
+  CircleHelp as HelpCircle,
+  Info,
+  LogOut,
+  ChevronRight,
+  Moon,
+} from 'lucide-react-native';
+
+type SettingItemProps = {
+  icon: React.ComponentType<{ size: number; color: string }>;
+  title: string;
+  value?: string;
+  onPress: () => void;
+  showToggle?: boolean;
+  isToggled?: boolean;
+  showArrow?: boolean;
+};
 
 export default function SettingsScreen() {
   const [darkMode, setDarkMode] = React.useState(true);
@@ -19,7 +38,15 @@ export default function SettingsScreen() {
     router.replace('/auth/login');
   };
 
-  const SettingItem = ({ icon: Icon, title, value, onPress, showToggle, isToggled, showArrow = true }) => (
+  const SettingItem: React.FC<SettingItemProps> = ({
+    icon: Icon,
+    title,
+    value,
+    onPress,
+    showToggle,
+    isToggled,
+    showArrow = true,
+  }) => (
     <TouchableOpacity style={styles.settingItem} onPress={onPress}>
       <View style={styles.settingIcon}>
         <Icon size={22} color="#FFFFFF" />
@@ -69,20 +96,12 @@ export default function SettingsScreen() {
           value="Public"
           onPress={() => {}}
         />
-        <SettingItem
-          icon={Shield}
-          title="Security"
-          onPress={() => {}}
-        />
+        <SettingItem icon={Shield} title="Security" onPress={() => {}} />
       </View>
 
       <Text style={styles.sectionTitle}>Support</Text>
       <View style={styles.section}>
-        <SettingItem
-          icon={HelpCircle}
-          title="Help Center"
-          onPress={() => {}}
-        />
+        <SettingItem icon={HelpCircle} title="Help Center" onPress={() => {}} />
         <SettingItem
           icon={Info}
           title="About"
@@ -174,3 +193,8 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter-SemiBold',
   },
 });
+
+
+// Add new Features 
+// 1. add story feature on main screen on the top of the screen Cricular and horizontally like instagram story section,
+// 2. add Messaging feature chat fearture screen to chat  and take that chat option on tab 
