@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, StyleSheet, StatusBar, Platform, SafeAreaView } from 'react-native';
 import ReelsList from '../../components/video/ReelsList';
+import StoriesList from '../../components/stories/StoriesList';
 import { useReels } from '../../hooks/useReels';
 
 export default function HomeScreen() {
@@ -9,6 +10,7 @@ export default function HomeScreen() {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.container}>
+        <StoriesList />
         <ReelsList 
           reels={reels} 
           isLoading={isLoading} 

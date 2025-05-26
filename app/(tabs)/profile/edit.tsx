@@ -10,9 +10,10 @@ import {
   Platform,
   KeyboardAvoidingView,
 } from 'react-native';
-import { router } from 'expo-router';
+import { router } from  'expo-router';
 import { ArrowLeft, Camera } from 'lucide-react-native';
 import Button from '../../../components/ui/Button';
+import IconButton from '../../../components/ui/IconButton';
 
 export default function EditProfileScreen() {
   const [username, setUsername] = useState('jessicahayes');
@@ -32,11 +33,13 @@ export default function EditProfileScreen() {
       style={styles.container}
     >
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()}>
-          <ArrowLeft color="#FFFFFF" size={24} />
-        </TouchableOpacity>
+        <IconButton
+          icon={ArrowLeft}
+          onPress={() => router.back()}
+          color="#FFFFFF"
+        />
         <Text style={styles.headerTitle}>Edit Profile</Text>
-        <View style={{ width: 24 }} />
+        <View style={{ width: 40 }} />
       </View>
 
       <ScrollView style={styles.content}>
