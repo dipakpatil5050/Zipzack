@@ -3,7 +3,7 @@ import { Tabs } from 'expo-router';
 import { Platform } from 'react-native';
 import { BlurView } from 'expo-blur';
 import { StyleSheet } from 'react-native';
-import { Chrome as Home, Search, SquarePlus as PlusSquare, MessageCircle, User } from 'lucide-react-native';
+import { Chrome as Home, Search, SquarePlus as PlusSquare, MessageCircle, User, Bell } from 'lucide-react-native';
 
 export default function TabLayout() {
   return (
@@ -54,11 +54,11 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="messages"
+        name="activity"
         options={{
-          title: 'Messages',
+          title: 'Activity',
           tabBarIcon: ({ color, size }) => (
-            <MessageCircle color={color} size={size} />
+            <Bell color={color} size={size} />
           ),
         }}
       />
