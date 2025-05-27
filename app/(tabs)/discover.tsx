@@ -11,26 +11,33 @@ import {
   ScrollView,
   StatusBar, 
   Platform,
-  SafeAreaView
+  SafeAreaView,
+  Pressable
 } from 'react-native';
 import { Search, TrendingUp, X } from 'lucide-react-native';
 import { mockReels } from '../../utils/mockData';
+import Animated, { 
+  useAnimatedStyle, 
+  withSpring,
+  useSharedValue,
+  withTiming 
+} from 'react-native-reanimated';
 
 const { width } = Dimensions.get('window');
 const COLUMN_COUNT = 3;
 const ITEM_SIZE = (width - 4) / COLUMN_COUNT;
 
-// Generate random view counts for trending videos
 const trendingVideos = mockReels.map(reel => ({
   ...reel,
   views: `${Math.floor(Math.random() * 10) + 1}.${Math.floor(Math.random() * 9) + 1}M`
 }));
 
-// Categories for discover page
 const categories = [
   'For You', 'Trending', 'Music', 'Gaming', 'Sports', 'Comedy', 
   'Food', 'Fitness', 'Beauty', 'Fashion', 'Travel', 'DIY'
 ];
+
+const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
 export default function DiscoverScreen() {
   const [searchText, setSearchText] = useState('');
@@ -53,25 +60,50 @@ export default function DiscoverScreen() {
     </TouchableOpacity>
   );
   
-  const renderCategoryItem = (category: string) => (
-    <TouchableOpacity 
-      key={category}
-      style={[
-        styles.categoryItem,
-        selectedCategory === category && styles.selectedCategory
-      ]}
-      onPress={() => setSelectedCategory(category)}
-    >
-      <Text 
+  const CategoryButton = ({ category }: { category: string }) => {
+    const scale = useSharedValue(1);
+    const isSelected = selectedCategory === category;
+    
+    const animatedStyle = useAnimatedStyle(() => {
+      return {
+        transform: [{ scale: scale.value }]
+      };
+    });
+
+    const handlePressIn = () => {
+      scale.value = withSpring(0.95);
+    };
+
+    const handlePressOut = () => {
+      scale.value = withSpring(1);
+    };
+
+    const handlePress = () => {
+      setSelectedCategory(category);
+    };
+
+    return (
+      <AnimatedPressable
+        onPressIn={handlePressIn}
+        onPressOut={handlePressOut}
+        onPress={handlePress}
         style={[
-          styles.categoryText,
-          selectedCategory === category && styles.selectedCategoryText
+          styles.categoryItem,
+          isSelected && styles.selectedCategory,
+          animatedStyle
         ]}
       >
-        {category}
-      </Text>
-    </TouchableOpacity>
-  );
+        <Text 
+          style={[
+            styles.categoryText,
+            isSelected && styles.selectedCategoryText
+          ]}
+        >
+          {category}
+        </Text>
+      </AnimatedPressable>
+    );
+  };
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -100,7 +132,9 @@ export default function DiscoverScreen() {
           style={styles.categoriesContainer}
           contentContainerStyle={styles.categoriesContent}
         >
-          {categories.map(renderCategoryItem)}
+          {categories.map((category) => (
+            <CategoryButton key={category} category={category} />
+          ))}
         </ScrollView>
         
         <View style={styles.trendingHeader}>
