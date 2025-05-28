@@ -41,7 +41,7 @@ export default function ChatScreen() {
       },
       {
         id: '2',
-        text: 'I'm good, thanks! Just saw your latest post 🔥',
+        text: 'I\'m good, thanks! Just saw your latest post 🔥',
         timestamp: '2:31 PM',
         isSender: false,
       },
@@ -69,7 +69,7 @@ export default function ChatScreen() {
     setTimeout(() => {
       const receivedMessage: Message = {
         id: (Date.now() + 1).toString(),
-        text: 'Thanks for your message! I'll get back to you soon.',
+        text: 'Thanks for your message! I\'ll get back to you soon.',
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
         isSender: false,
       };

@@ -12,7 +12,7 @@ import {
 import { router } from 'expo-router';
 import Avatar from '../../../components/ui/Avatar';
 import { mockUsers } from '../../../utils/mockData';
-import { Search, Edit } from 'lucide-react-native';
+import { Search, CreditCard as Edit } from 'lucide-react-native';
 import IconButton from '../../../components/ui/IconButton';
 
 export default function MessagesScreen() {
