@@ -2,18 +2,17 @@ import React, { useState, useRef, useEffect } from 'react';
 import {
   View,
   Text,
-  FlatList,
   StyleSheet,
-  SafeAreaView,
+  TextInput,
+  FlatList,
+  KeyboardAvoidingView,
   Platform,
-  StatusBar,
   TouchableOpacity,
+  SafeAreaView,
 } from 'react-native';
 import { useLocalSearchParams, router } from 'expo-router';
-import { ArrowLeft, Phone, Video } from 'lucide-react-native';
+import { ArrowLeft, Send } from 'lucide-react-native';
 import Avatar from '../../../components/ui/Avatar';
-import ChatBubble from '../../../components/chat/ChatBubble';
-import ChatInput from '../../../components/chat/ChatInput';
 import { mockUsers } from '../../../utils/mockData';
 
 interface Message {
@@ -25,121 +24,119 @@ interface Message {
 
 export default function ChatScreen() {
   const { id } = useLocalSearchParams();
-  const [messages, setMessages] = useState<Message[]>([]);
-  const flatListRef = useRef<FlatList>(null);
+  const [message, setMessage] = useState('');
+  const [messages, setMessages] = useState<Message[]>([
+    {
+      id: '1',
+      text: "Hey! How are you?",
+      timestamp: '2:30 PM',
+      isSender: true,
+    },
+    {
+      id: '2',
+      text: "I am good, thanks! Just saw your latest post!",
+      timestamp: '2:31 PM',
+      isSender: false,
+    },
+    {
+      id: '3',
+      text: "Thanks! Glad you liked it 😊",
+      timestamp: '2:31 PM',
+      isSender: true,
+    },
+  ]);
   
-  // Find the user from mock data
+  const flatListRef = useRef<FlatList>(null);
   const user = mockUsers.find(u => u.id === id) || mockUsers[0];
 
-  // Generate some initial messages
-  useEffect(() => {
-    const initialMessages: Message[] = [
-      {
-        id: '1',
-        text: 'Hey! How are you?',
-        timestamp: '2:30 PM',
-        isSender: true,
-      },
-      {
-        id: '2',
-        text: "I'm good, thanks! Just saw your latest post 🔥",
-        timestamp: '2:31 PM',
-        isSender: false,
-      },
-      {
-        id: '3',
-        text: 'Thanks! I spent a lot of time on that one',
-        timestamp: '2:32 PM',
-        isSender: true,
-      },
-    ];
-    setMessages(initialMessages);
-  }, []);
-
-  const handleSendMessage = (text: string) => {
-    const newMessage: Message = {
-      id: Date.now().toString(),
-      text,
-      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-      isSender: true,
-    };
-    
-    setMessages(prev => [...prev, newMessage]);
-    
-    // Simulate received message
-    setTimeout(() => {
-      const receivedMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        text: "Thanks for your message! I'll get back to you soon.",
+  const sendMessage = () => {
+    if (message.trim()) {
+      const newMessage: Message = {
+        id: Date.now().toString(),
+        text: message.trim(),
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        isSender: false,
+        isSender: true,
       };
-      setMessages(prev => [...prev, receivedMessage]);
-    }, 1000);
+      
+      setMessages(prev => [...prev, newMessage]);
+      setMessage('');
+      
+      setTimeout(() => {
+        flatListRef.current?.scrollToEnd({ animated: true });
+      }, 100);
+    }
   };
 
-  const handleSendHeart = () => {
-    handleSendMessage('❤️');
-  };
+  const renderMessage = ({ item }: { item: Message }) => (
+    <View style={[
+      styles.messageContainer,
+      item.isSender ? styles.sentMessage : styles.receivedMessage
+    ]}>
+      <Text style={[
+        styles.messageText,
+        item.isSender ? styles.sentMessageText : styles.receivedMessageText
+      ]}>
+        {item.text}
+      </Text>
+      <Text style={styles.timestamp}>{item.timestamp}</Text>
+    </View>
+  );
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <View style={styles.container}>
-        <View style={styles.header}>
-          <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-            <ArrowLeft color="#FFFFFF" size={24} />
-          </TouchableOpacity>
-
-          <View style={styles.userInfo}>
-            <Avatar source={{ uri: user.avatarUrl }} size={36} hasStory={user.hasStory} />
-            <View style={styles.userTextInfo}>
-              <Text style={styles.username}>{user.username}</Text>
-              <Text style={styles.activeStatus}>Active now</Text>
-            </View>
-          </View>
-
-          <View style={styles.headerActions}>
-            <TouchableOpacity style={styles.actionButton}>
-              <Phone color="#FFFFFF" size={24} />
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.actionButton}>
-              <Video color="#FFFFFF" size={24} />
-            </TouchableOpacity>
-          </View>
+    <SafeAreaView style={styles.container}>
+      <View style={styles.header}>
+        <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
+          <ArrowLeft color="#FFFFFF" size={24} />
+        </TouchableOpacity>
+        
+        <View style={styles.userInfo}>
+          <Avatar source={{ uri: user.avatarUrl }} size={40} hasStory={user.hasStory} />
+          <Text style={styles.username}>{user.username}</Text>
         </View>
+        
+        <View style={styles.placeholder} />
+      </View>
 
+      <KeyboardAvoidingView 
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={styles.content}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0}
+      >
         <FlatList
           ref={flatListRef}
           data={messages}
-          renderItem={({ item }) => (
-            <ChatBubble
-              message={item.text}
-              timestamp={item.timestamp}
-              isSender={item.isSender}
-            />
-          )}
+          renderItem={renderMessage}
           keyExtractor={item => item.id}
           contentContainerStyle={styles.messagesList}
-          onContentSizeChange={() => flatListRef.current?.scrollToEnd()}
           onLayout={() => flatListRef.current?.scrollToEnd()}
         />
 
-        <ChatInput
-          onSendMessage={handleSendMessage}
-          onSendHeart={handleSendHeart}
-          onSendImage={() => {}}
-        />
-      </View>
+        <View style={styles.inputContainer}>
+          <TextInput
+            style={styles.input}
+            value={message}
+            onChangeText={setMessage}
+            placeholder="Type a message..."
+            placeholderTextColor="#999"
+            multiline
+          />
+          <TouchableOpacity 
+            onPress={sendMessage}
+            style={[
+              styles.sendButton,
+              !message.trim() && styles.disabledSendButton
+            ]}
+            disabled={!message.trim()}
+          >
+            <Send size={20} color={message.trim() ? '#FFFFFF' : '#555555'} />
+          </TouchableOpacity>
+        </View>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: '#121212',
-    paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
-  },
   container: {
     flex: 1,
     backgroundColor: '#121212',
@@ -147,40 +144,97 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'space-between',
     padding: 16,
     borderBottomWidth: 1,
-    borderBottomColor: '#333333',
+    borderBottomColor: '#222',
   },
   backButton: {
-    marginRight: 12,
+    width: 40,
+    height: 40,
+    justifyContent: 'center',
   },
   userInfo: {
-    flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-  },
-  userTextInfo: {
-    marginLeft: 12,
   },
   username: {
     color: '#FFFFFF',
     fontSize: 16,
     fontWeight: '600',
+    marginLeft: 12,
     fontFamily: 'Inter-SemiBold',
   },
-  activeStatus: {
-    color: '#888888',
-    fontSize: 12,
-    fontFamily: 'Inter-Regular',
+  placeholder: {
+    width: 40,
   },
-  headerActions: {
-    flexDirection: 'row',
-  },
-  actionButton: {
-    padding: 8,
-    marginLeft: 8,
+  content: {
+    flex: 1,
   },
   messagesList: {
     padding: 16,
+  },
+  messageContainer: {
+    maxWidth: '80%',
+    marginVertical: 4,
+    padding: 12,
+    borderRadius: 16,
+  },
+  sentMessage: {
+    alignSelf: 'flex-end',
+    backgroundColor: '#FF375F',
+    borderBottomRightRadius: 4,
+  },
+  receivedMessage: {
+    alignSelf: 'flex-start',
+    backgroundColor: '#2A2A2A',
+    borderBottomLeftRadius: 4,
+  },
+  messageText: {
+    fontSize: 16,
+    marginBottom: 4,
+    fontFamily: 'Inter-Regular',
+  },
+  sentMessageText: {
+    color: '#FFFFFF',
+  },
+  receivedMessageText: {
+    color: '#FFFFFF',
+  },
+  timestamp: {
+    fontSize: 12,
+    color: 'rgba(255, 255, 255, 0.6)',
+    alignSelf: 'flex-end',
+    fontFamily: 'Inter-Regular',
+  },
+  inputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 16,
+    borderTopWidth: 1,
+    borderTopColor: '#222',
+  },
+  input: {
+    flex: 1,
+    backgroundColor: '#2A2A2A',
+    borderRadius: 20,
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    color: '#FFFFFF',
+    fontSize: 16,
+    maxHeight: 100,
+    fontFamily: 'Inter-Regular',
+  },
+  sendButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: '#FF375F',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginLeft: 8,
+  },
+  disabledSendButton: {
+    backgroundColor: '#2A2A2A',
   },
 });

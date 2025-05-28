@@ -12,13 +12,13 @@ import {
 import { router } from 'expo-router';
 import Avatar from '../../../components/ui/Avatar';
 import { mockUsers } from '../../../utils/mockData';
-import { Search, CreditCard as Edit } from 'lucide-react-native';
+import { Search, Edit } from 'lucide-react-native';
 import IconButton from '../../../components/ui/IconButton';
 
 export default function MessagesScreen() {
   const renderItem = ({ item: user }) => (
     <TouchableOpacity 
-      style={styles.chatItem} 
+      style={styles.chatItem}
       onPress={() => router.push(`/messages/${user.id}`)}
     >
       <Avatar source={{ uri: user.avatarUrl }} size={50} hasStory={user.hasStory} />
