@@ -7,13 +7,20 @@ import {
   ViewToken,
   ViewabilityConfig,
   ViewabilityConfigCallbackPair,
-  ListRenderItem
+  ListRenderItem,
+  Platform
 } from 'react-native';
+import Animated, { 
+  useAnimatedScrollHandler,
+  useSharedValue,
+  withSpring
+} from 'react-native-reanimated';
 import ReelItem from './ReelItem';
 import LoadingIndicator from '../ui/LoadingIndicator';
 import { ReelData } from '../../types';
 
 const { width, height } = Dimensions.get('window');
+const AnimatedFlatList = Animated.createAnimatedComponent(FlatList);
 
 interface ReelsListProps {
   reels: ReelData[];
@@ -27,11 +34,13 @@ export default function ReelsList({
   onEndReached 
 }: ReelsListProps) {
   const [activeReelIndex, setActiveReelIndex] = useState(0);
+  const scrollY = useSharedValue(0);
+  const isScrolling = useSharedValue(false);
+  
   const viewabilityConfig: ViewabilityConfig = {
-    itemVisiblePercentThreshold: 60 // Item is considered visible when 60% of it is visible
+    itemVisiblePercentThreshold: 60
   };
 
-  // Refs to avoid recreating callbacks on each render
   const flatListRef = useRef<FlatList>(null);
   
   const onViewableItemsChanged = useRef(({ viewableItems }: { 
@@ -48,13 +57,30 @@ export default function ReelsList({
     { viewabilityConfig, onViewableItemsChanged: onViewableItemsChanged.current }
   ]);
 
+  const scrollHandler = useAnimatedScrollHandler({
+    onScroll: (event) => {
+      scrollY.value = event.contentOffset.y;
+    },
+    onBeginDrag: () => {
+      isScrolling.value = true;
+    },
+    onEndDrag: () => {
+      isScrolling.value = false;
+      // Snap to the nearest reel
+      const nearestReel = Math.round(scrollY.value / height);
+      scrollY.value = withSpring(nearestReel * height, {
+        damping: 20,
+        stiffness: 90
+      });
+    }
+  });
+
   const renderItem: ListRenderItem<ReelData> = ({ item, index }) => {
     return (
       <ReelItem
         reel={item}
         isActive={index === activeReelIndex}
         onFinish={() => {
-          // Auto-advance to next reel on completion if this is the active reel
           if (index === activeReelIndex && index < reels.length - 1) {
             flatListRef.current?.scrollToIndex({
               index: index + 1,
@@ -78,7 +104,7 @@ export default function ReelsList({
 
   return (
     <View style={styles.container}>
-      <FlatList
+      <AnimatedFlatList
         ref={flatListRef}
         data={reels}
         renderItem={renderItem}
@@ -94,8 +120,14 @@ export default function ReelsList({
         windowSize={5}
         ListFooterComponent={isLoading ? <LoadingIndicator /> : null}
         snapToInterval={height}
-        decelerationRate="fast"
+        decelerationRate={Platform.select({ ios: 0.992, android: 0.985 })}
+        onScroll={scrollHandler}
+        scrollEventThrottle={16}
         removeClippedSubviews={true}
+        maintainVisibleContentPosition={{
+          minIndexForVisible: 0,
+          autoscrollToTopThreshold: 10
+        }}
       />
     </View>
   );
