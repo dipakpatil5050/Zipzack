@@ -1,11 +1,9 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { View, StyleSheet, Dimensions, Platform } from 'react-native';
+import { View, StyleSheet, Platform, useWindowDimensions } from 'react-native';
 import { Video, ResizeMode, AVPlaybackStatus } from 'expo-av';
 import { LinearGradient } from 'expo-linear-gradient';
 import VideoControls from './VideoControls';
 import { ReelData } from '../../types';
-
-const { width, height } = Dimensions.get('window');
 
 interface ReelPlayerProps {
   reel: ReelData;
@@ -18,10 +16,10 @@ export default function ReelPlayer({ reel, isActive, onFinish }: ReelPlayerProps
   const [status, setStatus] = useState<AVPlaybackStatus | null>(null);
   const [muted, setMuted] = useState(false);
   const [liked, setLiked] = useState(false);
+  const { width, height } = useWindowDimensions();
 
   const isPlaying = status?.isLoaded ? status.isPlaying : false;
   
-  // Control playback based on whether this reel is the active one
   useEffect(() => {
     if (Platform.OS !== 'web') {
       if (isActive) {
@@ -29,7 +27,6 @@ export default function ReelPlayer({ reel, isActive, onFinish }: ReelPlayerProps
       } else {
         videoRef.current?.pauseAsync();
         
-        // When scrolling away, also seek back to start for when we return
         if (status?.isLoaded && !status.isPlaying) {
           videoRef.current?.setPositionAsync(0);
         }
@@ -40,7 +37,6 @@ export default function ReelPlayer({ reel, isActive, onFinish }: ReelPlayerProps
   const onPlaybackStatusUpdate = (status: AVPlaybackStatus) => {
     setStatus(status);
     
-    // Check if video has ended
     if (status.isLoaded && status.didJustFinish && onFinish) {
       onFinish();
     }
@@ -68,7 +64,7 @@ export default function ReelPlayer({ reel, isActive, onFinish }: ReelPlayerProps
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { width, height }]}>
       <Video
         ref={videoRef}
         source={{ uri: reel.videoUrl }}
@@ -83,13 +79,11 @@ export default function ReelPlayer({ reel, isActive, onFinish }: ReelPlayerProps
         posterStyle={styles.poster}
       />
       
-      {/* Top gradient for better visibility of overlays */}
       <LinearGradient
         colors={['rgba(0,0,0,0.4)', 'transparent']}
         style={styles.topGradient}
       />
       
-      {/* Bottom gradient for better visibility of text */}
       <LinearGradient
         colors={['transparent', 'rgba(0,0,0,0.7)']}
         style={styles.bottomGradient}
@@ -110,8 +104,6 @@ export default function ReelPlayer({ reel, isActive, onFinish }: ReelPlayerProps
 
 const styles = StyleSheet.create({
   container: {
-    width: width,
-    height: Platform.OS === 'web' ? height - 60 : height - 80, // Adjust for tab bar
     backgroundColor: '#000',
     position: 'relative',
   },

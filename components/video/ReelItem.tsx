@@ -6,12 +6,13 @@ import { ReelData } from '../../types';
 interface ReelItemProps {
   reel: ReelData;
   isActive: boolean;
+  height: number;
   onFinish?: () => void;
 }
 
-export default function ReelItem({ reel, isActive, onFinish }: ReelItemProps) {
+export default function ReelItem({ reel, isActive, height, onFinish }: ReelItemProps) {
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { height }]}>
       <ReelPlayer 
         reel={reel} 
         isActive={isActive} 
@@ -23,6 +24,6 @@ export default function ReelItem({ reel, isActive, onFinish }: ReelItemProps) {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    width: '100%',
   },
 });

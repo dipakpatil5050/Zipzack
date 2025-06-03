@@ -4,8 +4,12 @@ import { Platform } from 'react-native';
 import { BlurView } from 'expo-blur';
 import { StyleSheet } from 'react-native';
 import { Chrome as Home, Search, SquarePlus as PlusSquare, MessageCircle, User, Bell } from 'lucide-react-native';
+import { usePathname } from 'expo-router';
 
 export default function TabLayout() {
+  const pathname = usePathname();
+  const hideTabBar = pathname.includes('/messages/');
+
   return (
     <Tabs
       screenOptions={{
@@ -14,7 +18,10 @@ export default function TabLayout() {
         tabBarActiveTintColor: '#FFFFFF',
         tabBarInactiveTintColor: '#999999',
         headerShown: false,
-        tabBarStyle: styles.tabBar,
+        tabBarStyle: [
+          styles.tabBar,
+          hideTabBar && styles.hiddenTabBar
+        ],
         tabBarBackground: () => (
           Platform.OS !== 'web' ? (
             <BlurView
@@ -82,6 +89,9 @@ const styles = StyleSheet.create({
     elevation: 0,
     height: 60,
     backgroundColor: Platform.OS === 'web' ? 'rgba(18, 18, 18, 0.9)' : 'transparent',
+  },
+  hiddenTabBar: {
+    display: 'none',
   },
   tabBarLabel: {
     fontSize: 10,
