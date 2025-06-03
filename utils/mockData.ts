@@ -78,8 +78,8 @@ export const mockReels: ReelData[] = [
   {
     id: 'reel3',
     user: mockUsers[2],
-    videoUrl: 'https://assets.mixkit.co/videos/preview/mixkit-aerial-panorama-of-a-landscape-with-mountains-and-a-lake-4249-large.mp4',
-    posterUrl: 'https://assets.mixkit.co/videos/preview/mixkit-aerial-panorama-of-a-landscape-with-mountains-and-a-lake-4249-large.mp4',
+    videoUrl: 'https://assets.mixkit.co/videos/1038/1038-720.mp4',
+    posterUrl: 'https://assets.mixkit.co/videos/1038/1038-720.mp4',
     caption: 'Found this hidden gem in Norway 🏔️ #travel #norway #nature',
     audioName: 'Adventure - Sam Smith',
     likes: 456700,
