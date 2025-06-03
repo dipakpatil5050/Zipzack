@@ -55,7 +55,7 @@ export const mockReels: ReelData[] = [
     id: 'reel1',
     user: mockUsers[0],
     videoUrl: 'https://assets.mixkit.co/videos/47005/47005-720.mp4',
-    posterUrl: 'https://assets.mixkit.co/videos/preview/mixkit-young-woman-waking-up-in-the-morning-42696-large.mp4',
+    posterUrl: 'https://assets.mixkit.co/videos/47005/47005-720.mp4',
     caption: 'Morning routine ☀️ #morningvibes #selfcare',
     audioName: 'Original Sound - jessicahayes',
     likes: 124500,
