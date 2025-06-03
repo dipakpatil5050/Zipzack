@@ -66,7 +66,7 @@ export const mockReels: ReelData[] = [
   {
     id: 'reel2',
     user: mockUsers[1],
-    videoUrl: 'https://assets.mixkit.co/videos/preview/mixkit-man-dancing-to-music-in-the-street-at-night-47678-large.mp4',
+    videoUrl: 'https://assets.mixkit.co/qi90kl6bw08frnw8zklcpfyzzowk',
     posterUrl: 'https://assets.mixkit.co/videos/preview/mixkit-man-dancing-to-music-in-the-street-at-night-47678-large.mp4',
     caption: 'When the beat drops 🔥 #dance #streetdance',
     audioName: 'Beat It - Michael Jackson',
