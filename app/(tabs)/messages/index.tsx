@@ -18,7 +18,7 @@ import IconButton from '../../../components/ui/IconButton';
 export default function MessagesScreen() {
   const renderItem = ({ item: user }) => (
     <TouchableOpacity
-      activeOpacity={0.8}
+      activeOpacity={0.7}
       style={styles.chatItem}
       onPress={() => router.push(`/messages/${user.id}`)}
     >
