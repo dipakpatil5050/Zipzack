@@ -5,6 +5,7 @@ import { useFrameworkReady } from '@/hooks/useFrameworkReady';
 import { useFonts, Inter_400Regular, Inter_500Medium, Inter_600SemiBold, Inter_700Bold } from '@expo-google-fonts/inter';
 import { SplashScreen } from 'expo-router';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { StyleSheet, View } from 'react-native';
 
 // Prevent the splash screen from auto-hiding
@@ -33,14 +34,16 @@ export default function RootLayout() {
   }
 
   return (
-    <GestureHandlerRootView style={styles.container}>
-      <Stack screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="auth" />
-        <Stack.Screen name="(tabs)" />
-        <Stack.Screen name="+not-found" options={{ title: 'Oops!' }} />
-      </Stack>
-      <StatusBar style="light" />
-    </GestureHandlerRootView>
+    <SafeAreaProvider>
+      <GestureHandlerRootView style={styles.container}>
+        <Stack screenOptions={{ headerShown: false }}>
+          <Stack.Screen name="auth" />
+          <Stack.Screen name="(tabs)" />
+          <Stack.Screen name="+not-found" options={{ title: 'Oops!' }} />
+        </Stack>
+        <StatusBar style="light" />
+      </GestureHandlerRootView>
+    </SafeAreaProvider>
   );
 }
 

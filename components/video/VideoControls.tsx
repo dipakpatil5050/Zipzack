@@ -1,9 +1,11 @@
-import React from 'react';
-import { View, Text, StyleSheet, TouchableWithoutFeedback, Dimensions } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, TouchableWithoutFeedback, Dimensions, Platform } from 'react-native';
 import { Heart, MessageCircle, Share, Volume2, VolumeX, Pause, Play } from 'lucide-react-native';
 import Avatar from '../ui/Avatar';
+import AnimatedLikeButton from '../ui/AnimatedLikeButton';
 import IconButton from '../ui/IconButton';
 import { ReelData } from '../../types';
+import * as Haptics from 'expo-haptics';
 
 const { width } = Dimensions.get('window');
 
@@ -26,6 +28,35 @@ export default function VideoControls({
   onMute,
   onLike,
 }: VideoControlsProps) {
+  const [localLiked, setLocalLiked] = useState(isLiked);
+  const [likeCount, setLikeCount] = useState(reel.likes);
+
+  const handleLike = () => {
+    // Trigger haptic feedback on supported platforms
+    if (Platform.OS !== 'web') {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    }
+
+    const newLikedState = !localLiked;
+    setLocalLiked(newLikedState);
+    
+    // Update like count
+    setLikeCount(prev => newLikedState ? prev + 1 : prev - 1);
+    
+    // Call parent handler
+    onLike();
+  };
+
+  const formatCount = (count: number) => {
+    if (count >= 1000000) {
+      return `${(count / 1000000).toFixed(1)}M`;
+    } else if (count >= 1000) {
+      return `${(count / 1000).toFixed(1)}K`;
+    } else {
+      return count.toString();
+    }
+  };
+
   return (
     <>
       {/* Touch area for play/pause */}
@@ -44,14 +75,12 @@ export default function VideoControls({
 
       {/* Right side action buttons */}
       <View style={styles.rightControls}>
-        <IconButton
-          icon={isLiked ? Heart : Heart}
-          onPress={onLike}
-          color={isLiked ? '#FF375F' : '#FFFFFF'}
+        <AnimatedLikeButton
+          isLiked={localLiked}
+          onPress={handleLike}
           size={28}
-          style={styles.actionButton}
         />
-        <Text style={styles.actionCount}>{reel.likes}</Text>
+        <Text style={styles.actionCount}>{formatCount(likeCount)}</Text>
 
         <IconButton
           icon={MessageCircle}
@@ -59,7 +88,7 @@ export default function VideoControls({
           size={28}
           style={styles.actionButton}
         />
-        <Text style={styles.actionCount}>{reel.comments}</Text>
+        <Text style={styles.actionCount}>{formatCount(reel.comments)}</Text>
 
         <IconButton
           icon={Share}
@@ -67,7 +96,7 @@ export default function VideoControls({
           size={28}
           style={styles.actionButton}
         />
-        <Text style={styles.actionCount}>{reel.shares}</Text>
+        <Text style={styles.actionCount}>{formatCount(reel.shares)}</Text>
 
         <IconButton
           icon={isMuted ? VolumeX : Volume2}
@@ -119,6 +148,10 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontSize: 12,
     marginBottom: 15,
+    fontFamily: 'Inter-Regular',
+    textShadowColor: 'rgba(0, 0, 0, 0.8)',
+    textShadowOffset: { width: 1, height: 1 },
+    textShadowRadius: 3,
   },
   bottomSection: {
     position: 'absolute',
@@ -137,11 +170,13 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontWeight: '700',
     fontSize: 16,
+    fontFamily: 'Inter-Bold',
   },
   caption: {
     color: '#FFFFFF',
     fontSize: 14,
     lineHeight: 20,
     marginBottom: 16,
+    fontFamily: 'Inter-Regular',
   },
 });

@@ -5,10 +5,12 @@ import { BlurView } from 'expo-blur';
 import { StyleSheet } from 'react-native';
 import { Chrome as Home, Search, SquarePlus as PlusSquare, MessageCircle, User } from 'lucide-react-native';
 import { usePathname } from 'expo-router';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function TabLayout() {
   const pathname = usePathname();
   const hideTabBar = pathname.includes('/messages/');
+  const insets = useSafeAreaInsets();
 
   return (
     <Tabs
@@ -20,6 +22,10 @@ export default function TabLayout() {
         headerShown: false,
         tabBarStyle: [
           styles.tabBar,
+          {
+            paddingBottom: Platform.OS === 'ios' ? insets.bottom : 8,
+            height: Platform.OS === 'ios' ? 85 + insets.bottom : 70,
+          },
           hideTabBar && styles.hiddenTabBar
         ],
         tabBarBackground: () => (
@@ -87,9 +93,8 @@ const styles = StyleSheet.create({
     position: 'absolute',
     borderTopWidth: 0,
     elevation: 0,
-    height: Platform.OS === 'ios' ? 85 : 60,
-    paddingBottom: Platform.OS === 'ios' ? 20 : 0,
-    backgroundColor: Platform.OS === 'web' ? 'rgba(18, 18, 18, 0.9)' : 'transparent',
+    backgroundColor: Platform.OS === 'web' ? 'rgba(18, 18, 18, 0.95)' : 'transparent',
+    paddingTop: 8,
   },
   hiddenTabBar: {
     display: 'none',
@@ -97,5 +102,6 @@ const styles = StyleSheet.create({
   tabBarLabel: {
     fontSize: 10,
     fontWeight: '500',
+    fontFamily: 'Inter-Medium',
   },
 });

@@ -1,21 +1,25 @@
 import React from 'react';
-import { View, StyleSheet, StatusBar, Platform, SafeAreaView } from 'react-native';
+import { View, StyleSheet, StatusBar, Platform } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import ReelsList from '../../components/video/ReelsList';
+import StoriesList from '../../components/stories/StoriesList';
 import { useReels } from '../../hooks/useReels';
 
 export default function HomeScreen() {
   const { reels, isLoading, loadMoreReels } = useReels();
+  const insets = useSafeAreaInsets();
   
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.container}>
+    <View style={[styles.container, { paddingTop: insets.top }]}>
+      <StoriesList />
+      <View style={styles.reelsContainer}>
         <ReelsList 
           reels={reels} 
           isLoading={isLoading} 
           onEndReached={loadMoreReels}
         />
       </View>
-    </SafeAreaView>
+    </View>
   );
 }
 
@@ -23,6 +27,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#000',
-    paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
+  },
+  reelsContainer: {
+    flex: 1,
   },
 });
