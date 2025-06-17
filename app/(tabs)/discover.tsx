@@ -34,7 +34,8 @@ const trendingVideos = mockReels.map(reel => ({
 
 const categories = [
   'For You', 'Trending', 'Music', 'Gaming', 'Sports', 'Comedy', 
-  'Food', 'Fitness', 'Beauty', 'Fashion', 'Travel', 'DIY'
+  'Food', 'Fitness', 'Beauty', 'Fashion', 'Travel', 'DIY', 'Art',
+  'Technology', 'Nature', 'Pets', 'Dance', 'Education'
 ];
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
@@ -71,11 +72,17 @@ export default function DiscoverScreen() {
     });
 
     const handlePressIn = () => {
-      scale.value = withSpring(0.95);
+      scale.value = withSpring(0.95, {
+        damping: 15,
+        stiffness: 300
+      });
     };
 
     const handlePressOut = () => {
-      scale.value = withSpring(1);
+      scale.value = withSpring(1, {
+        damping: 15,
+        stiffness: 300
+      });
     };
 
     const handlePress = () => {
@@ -88,8 +95,8 @@ export default function DiscoverScreen() {
         onPressOut={handlePressOut}
         onPress={handlePress}
         style={[
-          styles.categoryItem,
-          isSelected && styles.selectedCategory,
+          styles.categoryButton,
+          isSelected && styles.selectedCategoryButton,
           animatedStyle
         ]}
       >
@@ -98,6 +105,7 @@ export default function DiscoverScreen() {
             styles.categoryText,
             isSelected && styles.selectedCategoryText
           ]}
+          numberOfLines={1}
         >
           {category}
         </Text>
@@ -126,16 +134,18 @@ export default function DiscoverScreen() {
           </View>
         </View>
         
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          style={styles.categoriesContainer}
-          contentContainerStyle={styles.categoriesContent}
-        >
-          {categories.map((category) => (
-            <CategoryButton key={category} category={category} />
-          ))}
-        </ScrollView>
+        <View style={styles.categoriesSection}>
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            style={styles.categoriesContainer}
+            contentContainerStyle={styles.categoriesContent}
+          >
+            {categories.map((category) => (
+              <CategoryButton key={category} category={category} />
+            ))}
+          </ScrollView>
+        </View>
         
         <View style={styles.trendingHeader}>
           <TrendingUp size={18} color="#FF375F" />
@@ -173,7 +183,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#2A2A2A',
-    borderRadius: 8,
+    borderRadius: 12,
     paddingHorizontal: 12,
     height: 44,
   },
@@ -187,30 +197,53 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: 'Inter-Regular',
   },
-  categoriesContainer: {
-    maxHeight: 50,
+  categoriesSection: {
     marginBottom: 8,
+  },
+  categoriesContainer: {
+    maxHeight: 60,
   },
   categoriesContent: {
     paddingHorizontal: 16,
-  },
-  categoryItem: {
-    paddingHorizontal: 16,
     paddingVertical: 8,
-    marginRight: 8,
-    borderRadius: 16,
-    backgroundColor: '#2A2A2A',
   },
-  selectedCategory: {
+  categoryButton: {
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    marginRight: 8,
+    borderRadius: 20,
+    backgroundColor: '#2A2A2A',
+    minWidth: 60,
+    maxWidth: width * 0.3, // Prevent buttons from being too wide
+    alignItems: 'center',
+    justifyContent: 'center',
+    // Shadow for depth
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+    elevation: 3,
+  },
+  selectedCategoryButton: {
     backgroundColor: '#FF375F',
+    shadowColor: '#FF375F',
+    shadowOpacity: 0.3,
+    shadowRadius: 6,
+    elevation: 6,
   },
   categoryText: {
     color: '#FFFFFF',
     fontSize: 14,
     fontFamily: 'Inter-Medium',
+    textAlign: 'center',
+    flexShrink: 1, // Allow text to shrink if needed
   },
   selectedCategoryText: {
     fontFamily: 'Inter-SemiBold',
+    color: '#FFFFFF',
   },
   trendingHeader: {
     flexDirection: 'row',
@@ -237,6 +270,7 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
     backgroundColor: '#2A2A2A',
+    borderRadius: 8,
   },
   videoInfo: {
     position: 'absolute',
