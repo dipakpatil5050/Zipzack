@@ -10,16 +10,34 @@ import Animated, {
   runOnJS,
 } from 'react-native-reanimated';
 
-interface AnimatedLikeButtonProps {
-  isLiked: boolean;
-  onPress: () => void;
-  size?: number;
-}
-
 interface FloatingHeart {
   id: string;
   translateY: Animated.SharedValue<number>;
   opacity: Animated.SharedValue<number>;
+}
+
+const FloatingHeartComponent = React.memo(({ heart }: { heart: FloatingHeart }) => {
+  const floatingStyle = useAnimatedStyle(() => {
+    return {
+      transform: [
+        { translateY: heart.translateY.value },
+        { translateX: (Math.random() - 0.5) * 40 }, // Random horizontal movement
+      ],
+      opacity: heart.opacity.value,
+    };
+  });
+
+  return (
+    <Animated.View style={[styles.floatingHeart, floatingStyle]}>
+      <Heart size={20} color="#FF0000" fill="#FF0000" />
+    </Animated.View>
+  );
+});
+
+interface AnimatedLikeButtonProps {
+  isLiked: boolean;
+  onPress: () => void;
+  size?: number;
 }
 
 export default function AnimatedLikeButton({ 
@@ -78,24 +96,6 @@ export default function AnimatedLikeButton({
         heart => heart.id !== heartId
       );
     }, 1500);
-  };
-
-  const FloatingHeartComponent = ({ heart }: { heart: FloatingHeart }) => {
-    const floatingStyle = useAnimatedStyle(() => {
-      return {
-        transform: [
-          { translateY: heart.translateY.value },
-          { translateX: (Math.random() - 0.5) * 40 }, // Random horizontal movement
-        ],
-        opacity: heart.opacity.value,
-      };
-    });
-
-    return (
-      <Animated.View style={[styles.floatingHeart, floatingStyle]}>
-        <Heart size={20} color="#FF0000" fill="#FF0000" />
-      </Animated.View>
-    );
   };
 
   return (

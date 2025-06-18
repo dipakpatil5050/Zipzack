@@ -9,9 +9,9 @@ import {
   Dimensions
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import StoriesHeader from '../../components/stories/StoriesHeader';
-import FeedGrid from '../../components/feed/FeedGrid';
-import { useFeed } from '../../hooks/useFeed';
+import StoriesHeader from '@/components/stories/StoriesHeader';
+import FeedGrid from '@/components/feed/FeedGrid';
+import { useFeed } from '@/hooks/useFeed';
 
 const { width } = Dimensions.get('window');
 
