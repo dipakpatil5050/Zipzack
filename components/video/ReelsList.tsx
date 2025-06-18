@@ -1,14 +1,12 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { 
   FlatList, 
   StyleSheet, 
   View, 
-  Dimensions, 
   ViewToken,
   ViewabilityConfig,
   ViewabilityConfigCallbackPair,
   ListRenderItem,
-  Platform,
   useWindowDimensions
 } from 'react-native';
 import Animated from 'react-native-reanimated';
@@ -22,21 +20,34 @@ interface ReelsListProps {
   reels: ReelData[];
   isLoading?: boolean;
   onEndReached?: () => void;
+  initialIndex?: number;
 }
 
 export default function ReelsList({ 
   reels, 
   isLoading = false, 
-  onEndReached 
+  onEndReached,
+  initialIndex = 0
 }: ReelsListProps) {
-  const [activeReelIndex, setActiveReelIndex] = useState(0);
+  const [activeReelIndex, setActiveReelIndex] = useState(initialIndex);
   const { height: windowHeight } = useWindowDimensions();
+  const flatListRef = useRef<FlatList>(null);
   
   const viewabilityConfig: ViewabilityConfig = {
     itemVisiblePercentThreshold: 60
   };
 
-  const flatListRef = useRef<FlatList>(null);
+  // Scroll to initial index when component mounts
+  useEffect(() => {
+    if (initialIndex > 0 && reels.length > 0) {
+      setTimeout(() => {
+        flatListRef.current?.scrollToIndex({
+          index: initialIndex,
+          animated: false
+        });
+      }, 100);
+    }
+  }, [initialIndex, reels.length]);
   
   const onViewableItemsChanged = useRef(({ viewableItems }: { 
     viewableItems: ViewToken[], 
@@ -68,6 +79,16 @@ export default function ReelsList({
     index,
   });
 
+  const onScrollToIndexFailed = (info: any) => {
+    const wait = new Promise(resolve => setTimeout(resolve, 500));
+    wait.then(() => {
+      flatListRef.current?.scrollToIndex({ 
+        index: info.index, 
+        animated: false 
+      });
+    });
+  };
+
   if (reels.length === 0 && isLoading) {
     return <LoadingIndicator fullscreen message="Loading reels..." />;
   }
@@ -92,6 +113,7 @@ export default function ReelsList({
         snapToInterval={windowHeight}
         decelerationRate="fast"
         removeClippedSubviews={true}
+        onScrollToIndexFailed={onScrollToIndexFailed}
         maintainVisibleContentPosition={{
           minIndexForVisible: 0,
           autoscrollToTopThreshold: 10

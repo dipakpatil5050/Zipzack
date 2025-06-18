@@ -3,7 +3,7 @@ import { Tabs } from 'expo-router';
 import { Platform } from 'react-native';
 import { BlurView } from 'expo-blur';
 import { StyleSheet } from 'react-native';
-import { Chrome as Home, Search, SquarePlus as PlusSquare, MessageCircle, User } from 'lucide-react-native';
+import { Chrome as Home, Search, SquarePlus as PlusSquare, MessageCircle, User, Play } from 'lucide-react-native';
 import { usePathname } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -63,6 +63,15 @@ export default function TabLayout() {
           title: 'Create',
           tabBarIcon: ({ color, size }) => (
             <PlusSquare color={color} size={size + 4} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="reels"
+        options={{
+          title: 'Reels',
+          tabBarIcon: ({ color, size }) => (
+            <Play color={color} size={size} />
           ),
         }}
       />

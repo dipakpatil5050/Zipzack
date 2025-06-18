@@ -8,6 +8,20 @@ export interface UserData {
   followingCount?: number;
 }
 
+export interface PostData {
+  id: string;
+  user: UserData;
+  type: 'image' | 'video';
+  thumbnailUrl: string;
+  fullUrl?: string;
+  caption: string;
+  likes: number;
+  comments: number;
+  shares: number;
+  isLiked?: boolean;
+  timestamp: string;
+}
+
 export interface ReelData {
   id: string;
   user: UserData;
