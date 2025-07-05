@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { View, StyleSheet, TouchableOpacity } from 'react-native';
 import { Heart } from 'lucide-react-native';
 import Animated, {
@@ -7,25 +7,47 @@ import Animated, {
   withSpring,
   withSequence,
   withTiming,
-  runOnJS,
 } from 'react-native-reanimated';
 
 interface FloatingHeart {
   id: string;
-  translateY: Animated.SharedValue<number>;
-  opacity: Animated.SharedValue<number>;
 }
 
-const FloatingHeartComponent = React.memo(({ heart }: { heart: FloatingHeart }) => {
+const FloatingHeartComponent = React.memo(({ 
+  heart, 
+  onAnimationComplete 
+}: { 
+  heart: FloatingHeart;
+  onAnimationComplete: (id: string) => void;
+}) => {
+  const translateY = useSharedValue(0);
+  const opacity = useSharedValue(1);
+
   const floatingStyle = useAnimatedStyle(() => {
     return {
       transform: [
-        { translateY: heart.translateY.value },
+        { translateY: translateY.value },
         { translateX: (Math.random() - 0.5) * 40 }, // Random horizontal movement
       ],
-      opacity: heart.opacity.value,
+      opacity: opacity.value,
     };
   });
+
+  useEffect(() => {
+    // Start the animation when component mounts
+    translateY.value = withTiming(-100, { duration: 1500 });
+    opacity.value = withSequence(
+      withTiming(1, { duration: 200 }),
+      withTiming(0, { duration: 1300 })
+    );
+
+    // Remove the heart after animation completes
+    const timer = setTimeout(() => {
+      onAnimationComplete(heart.id);
+    }, 1500);
+
+    return () => clearTimeout(timer);
+  }, [heart.id, onAnimationComplete, translateY, opacity]);
 
   return (
     <Animated.View style={[styles.floatingHeart, floatingStyle]}>
@@ -46,7 +68,7 @@ export default function AnimatedLikeButton({
   size = 28 
 }: AnimatedLikeButtonProps) {
   const scale = useSharedValue(1);
-  const floatingHearts = useRef<FloatingHeart[]>([]);
+  const [floatingHearts, setFloatingHearts] = useState<FloatingHeart[]>([]);
   const heartContainer = useRef<View>(null);
 
   // Heart scale animation
@@ -72,30 +94,15 @@ export default function AnimatedLikeButton({
 
   const createFloatingHeart = () => {
     const heartId = Date.now().toString();
-    const translateY = useSharedValue(0);
-    const opacity = useSharedValue(1);
-
     const floatingHeart: FloatingHeart = {
       id: heartId,
-      translateY,
-      opacity,
     };
 
-    floatingHearts.current.push(floatingHeart);
+    setFloatingHearts(prev => [...prev, floatingHeart]);
+  };
 
-    // Animate the floating heart
-    translateY.value = withTiming(-100, { duration: 1500 });
-    opacity.value = withSequence(
-      withTiming(1, { duration: 200 }),
-      withTiming(0, { duration: 1300 })
-    );
-
-    // Remove the heart after animation completes
-    setTimeout(() => {
-      floatingHearts.current = floatingHearts.current.filter(
-        heart => heart.id !== heartId
-      );
-    }, 1500);
+  const removeFloatingHeart = (heartId: string) => {
+    setFloatingHearts(prev => prev.filter(heart => heart.id !== heartId));
   };
 
   return (
@@ -112,8 +119,12 @@ export default function AnimatedLikeButton({
       </TouchableOpacity>
 
       {/* Floating hearts */}
-      {floatingHearts.current.map((heart) => (
-        <FloatingHeartComponent key={heart.id} heart={heart} />
+      {floatingHearts.map((heart) => (
+        <FloatingHeartComponent 
+          key={heart.id} 
+          heart={heart} 
+          onAnimationComplete={removeFloatingHeart}
+        />
       ))}
     </View>
   );
