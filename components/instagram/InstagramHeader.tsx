@@ -20,7 +20,7 @@ export default function InstagramHeader() {
   return (
     <View style={styles.container}>
       <View style={styles.leftSection}>
-        <Text style={styles.logo}>Instagram</Text>
+        <Text style={styles.logo}>Zipzack</Text>
       </View>
       
       <View style={styles.rightSection}>
