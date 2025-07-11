@@ -19,17 +19,19 @@ export default function Avatar({
   
   if (hasStory) {
     return (
-      <Container onPress={onPress} style={[styles.container, { width: size + 8, height: size + 8 }]}>
+      <Container onPress={onPress} style={[styles.container, { width: size + 4, height: size + 4 }]}>
         <LinearGradient
-          colors={['#FF1E6A', '#FF8337', '#FFDA33']}
+          colors={['#F58529', '#DD2A7B', '#8134AF', '#515BD4']}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
-          style={[styles.storyRing, { width: size + 8, height: size + 8, borderRadius: (size + 8) / 2 }]}
+          style={[styles.storyRing, { width: size + 4, height: size + 4, borderRadius: (size + 4) / 2 }]}
         >
-          <Image
-            source={source}
-            style={[styles.image, { width: size, height: size, borderRadius: size / 2 }]}
-          />
+          <View style={[styles.storyInner, { width: size, height: size, borderRadius: size / 2 }]}>
+            <Image
+              source={source}
+              style={[styles.image, { width: size - 4, height: size - 4, borderRadius: (size - 4) / 2 }]}
+            />
+          </View>
         </LinearGradient>
       </Container>
     );
@@ -51,10 +53,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   image: {
-    borderWidth: 1,
-    borderColor: '#1F1F1F',
+    backgroundColor: '#F6F6F6',
   },
   storyRing: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 2,
+  },
+  storyInner: {
+    backgroundColor: '#FFFFFF',
     justifyContent: 'center',
     alignItems: 'center',
     padding: 2,

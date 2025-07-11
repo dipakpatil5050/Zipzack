@@ -9,8 +9,10 @@ import {
   Dimensions
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import StoriesHeader from '@/components/stories/StoriesHeader';
-import FeedGrid from '@/components/feed/FeedGrid';
+import InstagramHeader from '@/components/instagram/InstagramHeader';
+import StoriesPanel from '@/components/instagram/StoriesPanel';
+import PostFeed from '@/components/instagram/PostFeed';
+import ExploreSection from '@/components/instagram/ExploreSection';
 import { useFeed } from '@/hooks/useFeed';
 
 const { width } = Dimensions.get('window');
@@ -29,10 +31,12 @@ export default function HomeScreen() {
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>
       <StatusBar 
-        barStyle="light-content" 
-        backgroundColor="transparent" 
+        barStyle="dark-content" 
+        backgroundColor="#FFFFFF" 
         translucent 
       />
+      
+      <InstagramHeader />
       
       <ScrollView
         style={styles.scrollView}
@@ -41,8 +45,8 @@ export default function HomeScreen() {
           <RefreshControl
             refreshing={refreshing}
             onRefresh={handleRefresh}
-            tintColor="#FF375F"
-            colors={['#FF375F']}
+            tintColor="#262626"
+            colors={['#262626']}
           />
         }
         onScroll={({ nativeEvent }) => {
@@ -55,12 +59,13 @@ export default function HomeScreen() {
         }}
         scrollEventThrottle={400}
       >
-        <StoriesHeader />
-        <FeedGrid 
+        <StoriesPanel />
+        <PostFeed 
           posts={posts} 
           isLoading={isLoading}
           onLoadMore={loadMorePosts}
         />
+        <ExploreSection />
       </ScrollView>
     </View>
   );
@@ -69,7 +74,7 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#000',
+    backgroundColor: '#FFFFFF',
   },
   scrollView: {
     flex: 1,
