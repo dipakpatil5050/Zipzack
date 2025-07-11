@@ -8,7 +8,7 @@ import {
   Dimensions,
   Platform
 } from 'react-native';
-import { Heart, MessageCircle, Send, Bookmark, MoveHorizontal as MoreHorizontal } from 'lucide-react-native';
+import { Heart, MessageCircle, Send, Bookmark, MoreVertical } from 'lucide-react-native';
 import Avatar from '../ui/Avatar';
 import { PostData } from '../../types';
 import Animated, { 
@@ -92,7 +92,7 @@ export default function PostItem({ post }: PostItemProps) {
         </View>
         
         <TouchableOpacity style={styles.moreButton}>
-          <MoreHorizontal size={20} color="#262626" />
+          <MoreVertical size={20} color="#262626" />
         </TouchableOpacity>
       </View>
 
@@ -196,7 +196,8 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter-SemiBold',
   },
   moreButton: {
-    padding: 4,
+    padding: 8,
+    marginRight: -4, // Adjust for better edge alignment
   },
   imageContainer: {
     position: 'relative',
