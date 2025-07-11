@@ -8,7 +8,7 @@ import {
   Dimensions,
   Platform
 } from 'react-native';
-import { Heart, MessageCircle, Send, Bookmark, MoreHorizontal } from 'lucide-react-native';
+import { Heart, MessageCircle, Send, Bookmark, MoveHorizontal as MoreHorizontal } from 'lucide-react-native';
 import Avatar from '../ui/Avatar';
 import { PostData } from '../../types';
 import Animated, { 
