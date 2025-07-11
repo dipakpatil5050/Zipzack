@@ -92,7 +92,7 @@ export default function PostItem({ post }: PostItemProps) {
         </View>
         
         <TouchableOpacity style={styles.moreButton}>
-          <MoreHorizontal size={20} color="#262626" />
+          <MoreVertical size={20} color="#262626" />
         </TouchableOpacity>
       </View>
 
