@@ -1,5 +1,11 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Platform } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Platform,
+} from 'react-native';
 import { MessageCircle, Heart, Plus } from 'lucide-react-native';
 import { router } from 'expo-router';
 
@@ -20,28 +26,28 @@ export default function InstagramHeader() {
   return (
     <View style={styles.container}>
       <View style={styles.leftSection}>
-        <Text style={styles.logo}>ZipZack</Text>
-      </View>
-      
+        <Text style={styles.logo}>ᴢɪᴘᴢᴀᴄᴋ</Text>
+      </View> 
+
       <View style={styles.rightSection}>
-        <TouchableOpacity 
-          style={styles.iconButton} 
+        <TouchableOpacity
+          style={styles.iconButton}
           onPress={handleCreatePress}
           activeOpacity={0.7}
         >
           <Plus size={24} color="#262626" strokeWidth={2} />
         </TouchableOpacity>
-        
-        <TouchableOpacity 
-          style={styles.iconButton} 
+
+        <TouchableOpacity
+          style={styles.iconButton}
           onPress={handleNotificationsPress}
           activeOpacity={0.7}
         >
           <Heart size={24} color="#262626" strokeWidth={2} />
         </TouchableOpacity>
-        
-        <TouchableOpacity 
-          style={styles.iconButton} 
+
+        <TouchableOpacity
+          style={styles.iconButton}
           onPress={handleMessagesPress}
           activeOpacity={0.7}
         >
