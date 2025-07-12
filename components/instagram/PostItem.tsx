@@ -8,7 +8,7 @@ import {
   Dimensions,
   Platform
 } from 'react-native';
-import { Heart, MessageCircle, Send, Bookmark, MoveVertical as MoreVertical, EllipsisVertical  } from 'lucide-react-native';
+import { Heart, MessageCircle, Send, Bookmark, MoveVertical as MoreVertical, Ellipsis   } from 'lucide-react-native';
 import Avatar from '../ui/Avatar';
 import { PostData } from '../../types';
 import Animated, { 
@@ -92,7 +92,7 @@ export default function PostItem({ post }: PostItemProps) {
         </View>
         
         <TouchableOpacity style={styles.moreButton}>
-          <EllipsisVertical  size={20} color="#262626" />
+          <Ellipsis size={20} color="#262626" />
         </TouchableOpacity>
       </View>
 
