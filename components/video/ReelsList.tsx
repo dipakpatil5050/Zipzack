@@ -7,7 +7,8 @@ import {
   ViewabilityConfig,
   ViewabilityConfigCallbackPair,
   ListRenderItem,
-  useWindowDimensions
+  useWindowDimensions,
+  Platform
 } from 'react-native';
 import Animated from 'react-native-reanimated';
 import ReelItem from './ReelItem';
@@ -34,7 +35,8 @@ export default function ReelsList({
   const flatListRef = useRef<FlatList>(null);
   
   const viewabilityConfig: ViewabilityConfig = {
-    itemVisiblePercentThreshold: 60
+    itemVisiblePercentThreshold: 80,
+    minimumViewTime: 100
   };
 
   // Scroll to initial index when component mounts
@@ -43,7 +45,8 @@ export default function ReelsList({
       setTimeout(() => {
         flatListRef.current?.scrollToIndex({
           index: initialIndex,
-          animated: false
+          animated: false,
+          viewPosition: 0.5
         });
       }, 100);
     }
@@ -55,7 +58,10 @@ export default function ReelsList({
   }) => {
     if (viewableItems.length > 0) {
       const activeItem = viewableItems[0];
-      setActiveReelIndex(activeItem.index || 0);
+      const newIndex = activeItem.index || 0;
+      if (newIndex !== activeReelIndex) {
+        setActiveReelIndex(newIndex);
+      }
     }
   });
 
@@ -63,7 +69,7 @@ export default function ReelsList({
     { viewabilityConfig, onViewableItemsChanged: onViewableItemsChanged.current }
   ]);
 
-  const renderItem: ListRenderItem<ReelData> = ({ item, index }) => {
+  const renderItem: ListRenderItem<ReelData> = React.useCallback(({ item, index }) => {
     return (
       <ReelItem
         reel={item}
@@ -71,7 +77,7 @@ export default function ReelsList({
         height={windowHeight}
       />
     );
-  };
+  }, [activeReelIndex, windowHeight]);
 
   const getItemLayout = (_: any, index: number) => ({
     length: windowHeight,
@@ -84,11 +90,13 @@ export default function ReelsList({
     wait.then(() => {
       flatListRef.current?.scrollToIndex({ 
         index: info.index, 
-        animated: false 
+        animated: false,
+        viewPosition: 0.5
       });
     });
   };
 
+  const keyExtractor = React.useCallback((item: ReelData) => item.id, []);
   if (reels.length === 0 && isLoading) {
     return <LoadingIndicator fullscreen message="Loading reels..." />;
   }
@@ -99,25 +107,24 @@ export default function ReelsList({
         ref={flatListRef}
         data={reels}
         renderItem={renderItem}
-        keyExtractor={(item) => item.id}
+        keyExtractor={keyExtractor}
         pagingEnabled
         showsVerticalScrollIndicator={false}
         viewabilityConfigCallbackPairs={viewabilityConfigCallbackPairs.current}
         getItemLayout={getItemLayout}
         onEndReached={onEndReached}
         onEndReachedThreshold={0.5}
-        initialNumToRender={2}
-        maxToRenderPerBatch={3}
-        windowSize={5}
+        initialNumToRender={3}
+        maxToRenderPerBatch={2}
+        windowSize={3}
         ListFooterComponent={isLoading ? <LoadingIndicator /> : null}
         snapToInterval={windowHeight}
-        decelerationRate="fast"
+        decelerationRate={Platform.OS === 'ios' ? 0.998 : 'fast'}
         removeClippedSubviews={true}
         onScrollToIndexFailed={onScrollToIndexFailed}
-        maintainVisibleContentPosition={{
-          minIndexForVisible: 0,
-          autoscrollToTopThreshold: 10
-        }}
+        scrollEventThrottle={16}
+        bounces={false}
+        overScrollMode="never"
       />
     </View>
   );

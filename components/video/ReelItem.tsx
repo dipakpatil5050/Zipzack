@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 import { View, StyleSheet } from 'react-native';
 import ReelPlayer from './ReelPlayer';
 import { ReelData } from '../../types';
@@ -10,7 +10,7 @@ interface ReelItemProps {
   onFinish?: () => void;
 }
 
-export default function ReelItem({ reel, isActive, height, onFinish }: ReelItemProps) {
+const ReelItem = memo(function ReelItem({ reel, isActive, height, onFinish }: ReelItemProps) {
   return (
     <View style={[styles.container, { height }]}>
       <ReelPlayer 
@@ -20,7 +20,9 @@ export default function ReelItem({ reel, isActive, height, onFinish }: ReelItemP
       />
     </View>
   );
-}
+});
+
+export default ReelItem;
 
 const styles = StyleSheet.create({
   container: {

@@ -16,6 +16,7 @@ export default function ReelPlayer({ reel, isActive, onFinish }: ReelPlayerProps
   const [status, setStatus] = useState<AVPlaybackStatus | null>(null);
   const [muted, setMuted] = useState(false);
   const [liked, setLiked] = useState(false);
+  const [isLoaded, setIsLoaded] = useState(false);
   const { width, height } = useWindowDimensions();
 
   const isPlaying = status?.isLoaded ? status.isPlaying : false;
@@ -23,19 +24,30 @@ export default function ReelPlayer({ reel, isActive, onFinish }: ReelPlayerProps
   useEffect(() => {
     if (Platform.OS !== 'web') {
       if (isActive) {
-        videoRef.current?.playAsync();
+        if (isLoaded) {
+          videoRef.current?.playAsync();
+        }
       } else {
         videoRef.current?.pauseAsync();
         
-        if (status?.isLoaded && !status.isPlaying) {
+        // Reset video position when not active for smoother transitions
+        if (status?.isLoaded && status.positionMillis > 1000) {
           videoRef.current?.setPositionAsync(0);
         }
       }
     }
-  }, [isActive, videoRef]);
+  }, [isActive, videoRef, isLoaded]);
 
   const onPlaybackStatusUpdate = (status: AVPlaybackStatus) => {
     setStatus(status);
+    
+    if (status.isLoaded && !isLoaded) {
+      setIsLoaded(true);
+      // Auto-play when loaded and active
+      if (isActive) {
+        videoRef.current?.playAsync();
+      }
+    }
     
     if (status.isLoaded && status.didJustFinish && onFinish) {
       onFinish();
@@ -71,12 +83,14 @@ export default function ReelPlayer({ reel, isActive, onFinish }: ReelPlayerProps
         style={styles.video}
         resizeMode={ResizeMode.COVER}
         isLooping
-        shouldPlay={isActive}
+        shouldPlay={false} // Control playback manually for better performance
         isMuted={muted}
         onPlaybackStatusUpdate={onPlaybackStatusUpdate}
         usePoster
         posterSource={{ uri: reel.posterUrl }}
         posterStyle={styles.poster}
+        progressUpdateIntervalMillis={500}
+        positionMillis={0}
       />
       
       <LinearGradient
